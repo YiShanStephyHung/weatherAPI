@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Weather App</title>
+    <link rel="icon" type="image/x-icon" href="./icon_dino.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amaranth&family=Noto+Sans+TC&display=swap" rel="stylesheet">
+</head>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Amaranth', sans-serif;
+        font-family: 'Noto Sans TC', sans-serif;
+    }
+
+    #container {
+        width: 250px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: linear-gradient(#65bdfc 0%, #f7a2a2 55%, #1c98f0 100%);
+        padding: 15px 30px 30px;
+        border-radius: 30px;
+        color: whitesmoke;
+        text-align: center;
+        box-shadow: 0px 0px 10px 0px #a4a4a4;
+    }
+
+    #w_icon img {
+        width: 60%;
+    }
+
+    #w_temp {
+        font-size: 50px;
+        margin-top: -15px;
+        margin-bottom: 5px;
+        font-family: 'Amaranth', sans-serif;
+    }
+
+    #w_feelsLike {
+        margin-bottom: 10px;
+    }
+
+    #w_place {
+        font-size: 35px;
+        margin-bottom: 3px;
+    }
+
+    #w_date {
+        margin-bottom: 10px;
+    }
+
+    #w_other {
+        display: flex;
+        align-items: center;
+        justify-content: space-evenly;
+    }
+
+    #w_other p {
+        margin: 10px;
+    }
+</style>
+
+<body>
+    <div id="weather"></div>
+
+    <div id="container">
+        <div id="w_icon"></div>
+        <div id="mainContent">
+            <h1 id="w_temp"></h1>
+            <p id="w_feelsLike"></p>
+            <h1 id="w_place"><img src="./map-locator.png" width="20px"> 台中</h1>
+            <p id="w_date"></p>
+        </div>
+        <div id="w_other">
+            <p id="w_sunrise"></p>
+            <p id="w_sunset"></p>
+            <p id="w_humid"></p>
+        </div>
+    </div>
+
+    <script>
+        function makeRequest() {
+            xhr = new XMLHttpRequest();
+            xhr.open("GET", "http://api.openweathermap.org/data/2.5/forecast?q=Taichung&id=524901&appid=0c905d8ac9eb9133ec03c2d5e66cbd61&units=metric", true);
+            xhr.onload = function () {
+                var response = JSON.parse(this.responseText);
+                console.log(response);
+                var sunrise = new Date(response.city.sunrise * 1000);
+                var sunset = new Date(response.city.sunset * 1000);
+                var weatherIconNum = response.list[0].weather[0].icon;
+                var temp = Math.round(response.list[0].main.temp * 10) / 10 + ' °C';
+                var feelsLikeTemp = Math.round(response.list[0].main.feels_like * 10) / 10 + ' °C';
+                var humidity = response.list[0].main.humidity + '%';
+
+                document.getElementById('w_icon').innerHTML = "<img src='http://openweathermap.org/img/wn/" + weatherIconNum + "@2x.png'>";
+                document.getElementById('w_temp').innerHTML = temp;
+                document.getElementById('w_feelsLike').innerHTML = '體感溫度 ' + feelsLikeTemp;
+                document.getElementById('w_date').innerHTML = ((sunrise).getMonth() + 1) + '月' + (sunrise).getDate() + '日';
+                document.getElementById('w_sunrise').innerHTML = '日出時間 ' + '<br /> 0' + (sunrise).getHours() + ':' + (sunrise).getMinutes();
+                document.getElementById('w_sunset').innerHTML = '日落時間 ' + '<br />' + (sunset).getHours() + ':' + (sunset).getMinutes();
+                document.getElementById('w_humid').innerHTML = '濕度 ' + '<br />' + humidity;
+
+            }
+            xhr.send()
+        }
+        makeRequest();
+    </script>
+</body>
+
+</html>
